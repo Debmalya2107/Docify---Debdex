@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Your Documents</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Libsodium.js for Argon2 key derivation (optional - falls back to PBKDF2 if unavailable) -->
+    <script src="https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.7.13/dist/browsers/sodium.js" onerror="console.log('Libsodium failed to load, using PBKDF2 fallback')"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1>secure-docs</h1>
+                </div>
+                <p class="tagline">Secure Your Document With Your Own Password</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h2>Secure Your Documents</h2>
+                <p>Encrypt and decrypt documents entirely in your browser. No data is sent to any server - complete privacy.</p>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-lock"></i>
+                        <span>Secured With Password</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-user-shield"></i>
+                        <span>No Chance Of Data-tampering</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-key"></i>
+                        <span>Decrypted Only With Password</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Sections -->
+            <div class="sections-container">
+                <!-- Encrypt Section -->
+                <section class="section encrypt-section">
+                    <div class="section-header">
+                        <i class="fas fa-lock section-icon"></i>
+                        <h3>Encrypt Document</h3>
+                        <p>Upload a file and set a password to create an encrypted version</p>
+                    </div>
+                    
+                    <div class="section-content">
+                        <!-- File Upload Area -->
+                        <div class="file-upload-area" id="encryptFileArea">
+                            <div class="file-upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="upload-text">
+                                    <span class="upload-main">Drop your file here or</span>
+                                    <span class="upload-browse">browse files</span>
+                                </p>
+                                <input type="file" id="encryptFileInput" class="file-input" accept="*/*">
+                                <p class="upload-info">Supports all file types (PDF, DOCX, TXT, Images, etc.)</p>
+                            </div>
+                        </div>
+
+                        <!-- File Info -->
+                        <div class="file-info" id="encryptFileInfo" style="display: none;">
+                            <div class="file-details">
+                                <i class="fas fa-file file-icon"></i>
+                                <div class="file-text">
+                                    <span class="file-name" id="encryptFileName"></span>
+                                    <span class="file-size" id="encryptFileSize"></span>
+                                </div>
+                                <button class="remove-file-btn" id="removeEncryptFile">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="input-group">
+                            <label for="encryptPassword">Encryption Password</label>
+                            <div class="password-input-container">
+                                <input type="password" id="encryptPassword" placeholder="Enter a strong password" class="password-input">
+                                <button type="button" class="password-toggle" id="toggleEncryptPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill"></div>
+                                </div>
+                                <span class="strength-text">Enter password to see strength</span>
+                            </div>
+                        </div>
+
+                        <!-- Encrypt Button -->
+                        <button class="action-btn encrypt-btn" id="encryptBtn" disabled>
+                            <i class="fas fa-lock"></i>
+                            <span class="btn-text">Encrypt & Download</span>
+                            <div class="btn-loader" style="display: none;">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-container" id="encryptProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="progress-text">Encrypting...</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Decrypt Section -->
+                <section class="section decrypt-section">
+                    <div class="section-header">
+                        <i class="fas fa-unlock section-icon"></i>
+                        <h3>Decrypt Document</h3>
+                        <p>Upload an encrypted file and enter the password to decrypt</p>
+                    </div>
+                    
+                    <div class="section-content">
+                        <!-- File Upload Area -->
+                        <div class="file-upload-area" id="decryptFileArea">
+                            <div class="file-upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="upload-text">
+                                    <span class="upload-main">Drop your encrypted file here or</span>
+                                    <span class="upload-browse">browse files</span>
+                                </p>
+                                <input type="file" id="decryptFileInput" class="file-input" accept=".enc,.secured">
+                                <p class="upload-info">Only accepts encrypted files (.enc, .secured)</p>
+                            </div>
+                        </div>
+
+                        <!-- File Info -->
+                        <div class="file-info" id="decryptFileInfo" style="display: none;">
+                            <div class="file-details">
+                                <i class="fas fa-file-lock file-icon"></i>
+                                <div class="file-text">
+                                    <span class="file-name" id="decryptFileName"></span>
+                                    <span class="file-size" id="decryptFileSize"></span>
+                                </div>
+                                <button class="remove-file-btn" id="removeDecryptFile">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="input-group">
+                            <label for="decryptPassword">Decryption Password</label>
+                            <div class="password-input-container">
+                                <input type="password" id="decryptPassword" placeholder="Enter the password used for encryption" class="password-input">
+                                <button type="button" class="password-toggle" id="toggleDecryptPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Decrypt Button -->
+                        <button class="action-btn decrypt-btn" id="decryptBtn" disabled>
+                            <i class="fas fa-unlock"></i>
+                            <span class="btn-text">Decrypt & Download</span>
+                            <div class="btn-loader" style="display: none;">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-container" id="decryptProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="progress-text">Decrypting...</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Alert/Notification System -->
+    <div class="alert-container" id="alertContainer"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                
+                <div class="security-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Your files never leave your device</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/crypto.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
